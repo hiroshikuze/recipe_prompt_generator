@@ -3,13 +3,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>レシピ用プロンプトメーカー</title>
+  <title>まかないジェネレーター</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div class="container">
-    <h1>レシピ用プロンプトメーカー</h1>
-    <p class="lead">毎回の指示文づくりを自動化。前回内容は <span class="mono">localStorage</span> に保存されます。</p>
+    <h1>まかないジェネレーター</h1>
+    <p class="lead">料理のレシピを生成AIに依頼するためのプロンプトを提案するツールです。<br>
+      前回内容は <span class="mono">localStorage</span> に保存されます。</p>
 
     <div class="grid">
       <section class="card col-6">
@@ -17,7 +18,6 @@
         <div class="equip-list" id="equipList"></div>
         <label for="equipExtra" style="margin-top:8px">その他（カンマ区切り）</label>
         <input id="equipExtra" type="text" placeholder="例: 圧力鍋, ブレンダー" />
-        <p class="muted small">ヒント：チェック + ここで自由追加 → テンプレに反映</p>
       </section>
 
       <section class="card col-6">
@@ -66,196 +66,5 @@
   </div>
 
 <script src="main.js"></script>
-
-  const DEFAULT_EQUIP = [
-    "ホットクック","ヘルシオウォーターオーブン","ガスコンロ","ガスオーブン","炊飯器",
-    "電子レンジ","フライパン","鍋","トースター","電気圧力鍋"
-  ];
-
-  const els = {
-    equipList: document.getElementById('equipList'),
-    equipExtra: document.getElementById('equipExtra'),
-    adults: document.getElementById('adults'),
-    kids: document.getElementById('kids'),
-    mealCount: document.getElementById('mealCount'),
-    targetMin: document.getElementById('targetMin'),
-    ingredients: document.getElementById('ingredients'),
-    notes: document.getElementById('notes'),
-    formatHint: document.getElementById('formatHint'),
-    btnBuild: document.getElementById('btnBuild'),
-    btnCopy: document.getElementById('btnCopy'),
-    btnReset: document.getElementById('btnReset'),
-    out: document.getElementById('out'),
-    chips: document.getElementById('ingredientsChips')
-  };
-
-  const STORAGE_KEY = 'recipe_prompt_maker_v1';
-
-  function renderEquipList(saved){
-    els.equipList.innerHTML = '';
-    DEFAULT_EQUIP.forEach(name => {
-      const id = 'eq_' + name;
-      const wrap = document.createElement('label');
-      wrap.className = 'equip-item';
-      const cb = document.createElement('input');
-      cb.type = 'checkbox';
-      cb.value = name;
-      cb.id = id;
-      if(saved && saved.equip && saved.equip.includes(name)) cb.checked = true;
-      const span = document.createElement('span');
-      span.textContent = name;
-      wrap.appendChild(cb); wrap.appendChild(span);
-      els.equipList.appendChild(wrap);
-    });
-  }
-
-  function parseCSV(s){
-    return (s||'')
-      .split(',')
-      .map(v=>v.trim())
-      .filter(Boolean);
-  }
-
-  function uniq(arr){
-    return [...new Set(arr.filter(Boolean))];
-  }
-
-  function ingredientsToChips(){
-    els.chips.innerHTML = '';
-    parseCSV(els.ingredients.value).forEach(x=>{
-      const tag = document.createElement('span');
-      tag.className = 'chip';
-      tag.textContent = x;
-      els.chips.appendChild(tag);
-    })
-  }
-
-  function getState(){
-    const selectedEquip = [...els.equipList.querySelectorAll('input[type="checkbox"]:checked')].map(e=>e.value);
-    const extra = parseCSV(els.equipExtra.value);
-    const equip = uniq([...selectedEquip, ...extra]);
-    return {
-      equip,
-      adults: +els.adults.value||0,
-      kids: +els.kids.value||0,
-      mealCount: +els.mealCount.value||1,
-      targetMin: +els.targetMin.value||60,
-      ingredients: parseCSV(els.ingredients.value),
-      notes: els.notes.value.trim(),
-      formatHint: els.formatHint.value,
-      out: els.out.value
-    }
-  }
-
-  function setState(s){
-    els.equipExtra.value = (s.equip||[]).filter(x=>!DEFAULT_EQUIP.includes(x)).join(', ');
-    els.adults.value = s.adults ?? 2;
-    els.kids.value = s.kids ?? 0;
-    els.mealCount.value = s.mealCount ?? 3;
-    els.targetMin.value = s.targetMin ?? 60;
-    els.ingredients.value = (s.ingredients||[]).join(', ');
-    els.notes.value = s.notes || '';
-    els.formatHint.value = s.formatHint || defaultFormatHint();
-    els.out.value = s.out || '';
-    renderEquipList(s);
-    ingredientsToChips();
-  }
-
-  function save(){
-    const state = getState();
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-  }
-
-  function load(){
-    try{
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if(!raw) return null;
-      return JSON.parse(raw);
-    }catch(e){ return null }
-  }
-
-  function defaultFormatHint(){
-    return [
-      '出力は次の順番・見出しで日本語でお願いします：',
-      '1) まとめ（全体像・所要時間・洗い物の目安）',
-      '2) 買い足すと良いもの（任意）',
-      '3) 一度に作る段取り（分刻みのタイムライン）',
-      '4) レシピ一覧（各レシピの材料・手順・保存方法）',
-      '5) 余った材料の活用案',
-      '6) 後片付けと保存のコツ',
-      '※ 分量は大人=1.0, 子ども=0.6 係数で概算して明記してください。',
-      '※ 家にない機材は使わないでください。代替案があれば併記。',
-      '※ 食事回数分の作りおき・リメイク前提で、再加熱手順も書いてください。'
-    ].join('\n');
-  }
-
-  function buildPrompt(){
-    const s = getState();
-    const equipText = s.equip.length ? s.equip.join('、') : '一般的な家庭用調理器具';
-    const ingText = s.ingredients.length ? s.ingredients.join('、') : 'とくに指定なし（家にある一般的な調味料と食材）';
-
-    const base = [
-      `以下の条件で、料理の計画とレシピを提案してください。`,
-      `\n【前提】`,
-      `・使用可能な機材：${equipText}。`,
-      `・人数：大人${s.adults}人、子ども${s.kids}人。`,
-      `・目標調理時間：一連の作業を ${s.targetMin} 分以内で完了。`,
-      `・食事回数：${s.mealCount} 回分（作り置き/リメイク含む）。`,
-      `・現在ある主な材料：${ingText}。`,
-      s.notes ? `・備考：${s.notes}` : '',
-      `\n【要望】`,
-      `・最初に各レシピの分量（大人係数1.0、子ども0.6で計算）を明記してください。`,
-      `・工程は同時並行で効率良く。洗い物が少なくなる順序で。`,
-      `・保存方法（冷蔵/冷凍/日持ち目安）と再加熱手順を記載。`,
-      `・不足食材があれば代替案を併記してください。`,
-      `\n【出力フォーマット】\n${s.formatHint || defaultFormatHint()}`
-    ].filter(Boolean).join('\n');
-
-    els.out.value = base;
-    save();
-  }
-
-  // Events
-  ['input','change'].forEach(ev=>{
-    ['equipExtra','adults','kids','mealCount','targetMin','ingredients','notes','formatHint','out']
-      .forEach(id=> els[id].addEventListener(ev, ()=>{ ingredientsToChips(); save(); }));
-  });
-  els.btnBuild.addEventListener('click', buildPrompt);
-
-  els.btnCopy.addEventListener('click', async ()=>{
-    try{
-      await navigator.clipboard.writeText(els.out.value || '');
-      toast('コピーしました');
-    }catch(e){ toast('コピーに失敗しました…'); }
-  });
-
-  els.btnReset.addEventListener('click', ()=>{
-    localStorage.removeItem(STORAGE_KEY);
-    setState({});
-    toast('保存内容を削除しました');
-  });
-
-  // Tiny toast
-  function toast(msg){
-    const t = document.createElement('div');
-    t.textContent = msg;
-    t.style.position='fixed'; t.style.bottom='20px'; t.style.left='50%'; t.style.transform='translateX(-50%)';
-    t.style.background='#111827'; t.style.border='1px solid #1f2937'; t.style.padding='10px 14px'; t.style.borderRadius='12px'; t.style.boxShadow='0 10px 30px rgba(0,0,0,.35)';
-    t.style.color='#e5e7eb'; t.style.zIndex='9999';
-    document.body.appendChild(t);
-    setTimeout(()=>{ t.style.opacity='0'; t.style.transition='opacity .35s'; }, 1200);
-    setTimeout(()=> t.remove(), 1700);
-  }
-
-  // Init
-  (function init(){
-    const saved = load();
-    renderEquipList(saved);
-    setState(saved || {});
-    if(!saved){ els.formatHint.value = defaultFormatHint(); }
-    ingredientsToChips();
-  })();
-})();
-</script>
 </body>
 </html>
