@@ -1,17 +1,18 @@
 # まかないジェネレーター
 
-Recipe Prompt Generator.  
+Recipe Prompt Generator.
 
 ## 概要
 
-This tool suggests prompts to ask AI to generate cooking recipes.  
+This tool suggests prompts to ask AI to generate cooking recipes.
 
-このプロジェクト「まかないジェネレーター」は、料理のレシピを生成AIに依頼するためのプロンプトを提案するツールです。  
-ユーザーは使用可能な調理機材や材料を入力することで、最適なレシピを生成するためのプロンプトを出力します。  
+このプロジェクト「まかないジェネレーター」は、料理のレシピを生成AIに依頼するためのプロンプトを提案するツールです。
+
+ユーザーは使用可能な調理機材や材料を入力することで、最適なレシピを生成するためのプロンプトを出力します。
 
 ## デモ
 
-[index.html](https://hiroshikuze.github.io/recipe_prompt_generator/)をブラウザで開くと、デモが表示されます。  
+[index.html](https://hiroshikuze.github.io/recipe_prompt_generator/)をブラウザで開くと、デモが表示されます。
 
 ## 特徴
 

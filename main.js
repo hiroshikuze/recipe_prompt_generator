@@ -60,13 +60,13 @@
   }
 
   /**
-   * カンマ区切りの文字列を配列に変換
+   * カンマやスペース区切りの文字列を配列に変換
    * @param {string} s
    * @returns {string[]}
    */
-  const parseCSV = (s) => {
+  const parseList = (s) => {
     return (s||'')
-      .split(',')
+      .split(/[\s,、]+/)
       .map(v=>v.trim())
       .filter(Boolean);
   }
@@ -85,7 +85,7 @@
    */
   const ingredientsToChips = () => {
       els.chips.innerHTML = '';
-      parseCSV(els.ingredients.value).forEach(x=>{
+      parseList(els.ingredients.value).forEach(x=>{
         const tag = document.createElement('span');
         tag.className = 'chip';
         tag.textContent = x;
@@ -99,7 +99,7 @@
    */
   const getState = () => {
     const selectedEquip = [...els.equipList.querySelectorAll('input[type="checkbox"]:checked')].map(e=>e.value);
-    const extra = parseCSV(els.equipExtra.value);
+    const extra = parseList(els.equipExtra.value);
     const equip = uniq([...selectedEquip, ...extra]);
     return {
       equip,
@@ -107,7 +107,7 @@
       kids: +els.kids.value||0,
       mealCount: +els.mealCount.value||1,
       targetMin: +els.targetMin.value||60,
-      ingredients: parseCSV(els.ingredients.value),
+      ingredients: parseList(els.ingredients.value),
       notes: els.notes.value.trim(),
       formatHint: els.formatHint.value,
       out: els.out.value

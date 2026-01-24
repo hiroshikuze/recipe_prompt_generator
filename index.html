@@ -16,21 +16,54 @@
       <section class="card col-6">
         <h2>1. 機材</h2>
         <div class="equip-list" id="equipList"></div>
-        <label for="equipExtra" style="margin-top:8px">その他（カンマ区切り）</label>
-        <input id="equipExtra" type="text" placeholder="例: 圧力鍋, ブレンダー" />
+        <label for="equipExtra" style="margin-top:8px">その他（スペース or カンマ区切り）</label>
+        <input id="equipExtra" type="text" placeholder="例: 圧力鍋 ブレンダー" />
       </section>
 
       <section class="card col-6">
         <h2>2. 人数 / 回数 / 目標時間</h2>
         <div class="row">
           <label style="min-width:90px">大人</label>
-          <input id="adults" type="number" min="0" step="1" value="2">
+          <select id="adults">
+            <option value="0">0</option>
+            <option value="1">1</option>
+            <option value="2" selected>2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+            <option value="6">6</option>
+            <option value="7">7</option>
+            <option value="8">8</option>
+            <option value="9">9</option>
+          </select>
           <label style="min-width:90px">子ども</label>
-          <input id="kids" type="number" min="0" step="1" value="0">
+          <select id="kids">
+            <option value="0" selected>0</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+            <option value="6">6</option>
+            <option value="7">7</option>
+            <option value="8">8</option>
+            <option value="9">9</option>
+          </select>
         </div>
         <div class="row" style="margin-top:8px">
           <label style="min-width:90px">食事回数</label>
-          <input id="mealCount" type="number" min="1" step="1" value="3">
+          <select id="mealCount">
+            <option value="0">0</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3" selected>3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+            <option value="6">6</option>
+            <option value="7">7</option>
+            <option value="8">8</option>
+            <option value="9">9</option>
+          </select>
           <label style="min-width:90px">目標時間(分)</label>
           <input id="targetMin" type="number" min="5" step="5" value="60">
         </div>
@@ -38,7 +71,7 @@
 
       <section class="card col-12">
         <h2>3. 現在ある材料</h2>
-        <textarea id="ingredients" placeholder="カンマ区切りで入力（例: 米, 卵, 玉ねぎ, トマト, 冷凍胸肉, 冷凍豚肉の切り身）"></textarea>
+        <textarea id="ingredients" placeholder="スペース or カンマ区切りで入力（例: 米 卵 玉ねぎ トマト 冷凍胸肉 冷凍豚肉の切り身）"></textarea>
         <div class="chips" id="ingredientsChips"></div>
         <div class="row" style="margin-top:8px">
           <label>備考（任意）</label>
