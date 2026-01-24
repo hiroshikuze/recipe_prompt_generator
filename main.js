@@ -60,13 +60,13 @@
   }
 
   /**
-   * カンマやスペース区切りの文字列を配列に変換
+   * カンマやスペースなどの区切りの文字列を配列に変換
    * @param {string} s
    * @returns {string[]}
    */
   const parseList = (s) => {
     return (s||'')
-      .split(/[\s,、]+/)
+      .split(/[\s,、　]+/)
       .map(v=>v.trim())
       .filter(Boolean);
   }
