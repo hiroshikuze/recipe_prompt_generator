@@ -10,6 +10,8 @@ This tool suggests prompts to ask AI to generate cooking recipes.
 
 ユーザーは使用可能な調理機材や材料を入力することで、最適なレシピを生成するためのプロンプトを出力します。
 
+![faviicon](images/favicon_w256.png)
+
 ## デモ
 
 [index.html](https://hiroshikuze.github.io/recipe_prompt_generator/)をブラウザで開くと、デモが表示されます。
@@ -25,8 +27,8 @@ This tool suggests prompts to ask AI to generate cooking recipes.
 2. 材料をカンマ区切りなどで入力します。
 3. 任意で備考を入力します。
 4. 任意で出力フォーマットを指定します。
-5. 「プロンプトを作成」ボタンをクリックしてレシピを生成します。
-6. 「クリップボードにコピー」を押してお好みの生成AIに問い合わせしていただくか、「Perplexityで開く」を押して料理レシピを相談してください。
+5. 「🧠プロンプト」ボタンをクリックしてレシピ生成プロンプトを作成させます。
+6. 「📋コピー」を押してクリップボードにコピーし、お好みの生成AIに問い合わせしていただくか、「🔗Perplexity」を押して[Perplexity](https://www.perplexity.ai/)から料理レシピを相談してください。
 
 ## インストール
 
