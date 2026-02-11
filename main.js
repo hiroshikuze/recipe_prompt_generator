@@ -26,9 +26,18 @@
     formatHint: document.getElementById('formatHint'),
     btnBuild: document.getElementById('btnBuild'),
     btnCopy: document.getElementById('btnCopy'),
-    btnReset: document.getElementById('btnReset'),
+    btnOpenPerplexity: document.getElementById('btnOpenPerplexity'),
     out: document.getElementById('out'),
     chips: document.getElementById('ingredientsChips')
+  };
+
+  /**
+   * プロンプト出力後のアクションボタン（コピー、Perplexityで開く）の表示を切り替える
+   */
+  const updateActionButtonsVisibility = () => {
+    const hasPrompt = els.out.value && els.out.value.trim() !== '';
+    els.btnCopy.style.display = hasPrompt ? '' : 'none';
+    els.btnOpenPerplexity.style.display = hasPrompt ? '' : 'none';
   };
 
   /**
@@ -197,6 +206,7 @@
     ].filter(Boolean).join('\n');
 
     els.out.value = base;
+    updateActionButtonsVisibility();
     save();
   }
 
@@ -214,10 +224,23 @@
     }catch(e){ toast('コピーに失敗しました…'); }
   });
 
-  els.btnReset.addEventListener('click', ()=>{
-    localStorage.removeItem(STORAGE_KEY);
-    setState({});
-    toast('保存内容を削除しました');
+  /**
+   * Perplexity AIにプロンプトを送信してブラウザで開く
+   */
+  els.btnOpenPerplexity.addEventListener('click', () => {
+    try {
+      const promptText = els.out.value;
+      if (promptText && promptText.trim() !== '') {
+        const encodedPrompt = encodeURIComponent(promptText);
+        const perplexityUrl = `https://www.perplexity.ai/search?q=${encodedPrompt}`;
+        window.open(perplexityUrl, '_blank');
+      } else {
+        toast('プロンプトが空です');
+      }
+    } catch (e) {
+      toast('Perplexityを開くことに失敗しました');
+      console.error('Perplexity open error:', e);
+    }
   });
 
   /**
@@ -242,5 +265,6 @@
     setState(saved || {});
     if(!saved){ els.formatHint.value = defaultFormatHint(); }
     ingredientsToChips();
+    updateActionButtonsVisibility();
   })();
 })();
