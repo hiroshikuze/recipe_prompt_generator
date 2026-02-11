@@ -132,7 +132,7 @@
     els.adults.value = s.adults ?? 2;
     els.kids.value = s.kids ?? 0;
     els.mealCount.value = s.mealCount ?? 3;
-    els.targetMin.value = s.targetMin ?? 60;
+    els.targetMin.value = s.targetMin ?? 30;
     els.ingredients.value = (s.ingredients||[]).join(', ');
     els.notes.value = s.notes || '';
     els.formatHint.value = s.formatHint || defaultFormatHint();

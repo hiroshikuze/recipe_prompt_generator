@@ -3,10 +3,13 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
   <title>まかないジェネレーター</title>
-  <link rel="stylesheet" href="style.css" />
-  <link rel="icon" href="favicon.ico" />
-  <link rel="apple-touch-icon" href="apple-touch-icon.png" />
+  <link rel="stylesheet" href="style.css?v=20250817.1" />
+  <link rel="icon" href="favicon.ico?v=20260211.1" />
+  <link rel="apple-touch-icon" href="apple-touch-icon.png?v=20260211.1" />
 </head>
 <body>
   <div class="container">
@@ -16,14 +19,14 @@
 
     <div class="grid">
       <section class="card col-6">
-        <h2>1. 機材</h2>
+        <h2>1. 🍳機材</h2>
         <div class="equip-list" id="equipList"></div>
         <label for="equipExtra" style="margin-top:8px">その他（スペース・カンマ・読点「、」区切り）</label>
         <input id="equipExtra" type="text" placeholder="例: 圧力鍋 ブレンダー" />
       </section>
 
       <section class="card col-6">
-        <h2>2. 人数 / 回数 / 目標時間</h2>
+        <h2>2. 👥人数 / 回数 / 目標時間</h2>
         <div class="row">
           <label style="min-width:90px">大人</label>
           <select id="adults">
@@ -67,12 +70,23 @@
             <option value="9">9</option>
           </select>
           <label style="min-width:90px">目標時間(分)</label>
-          <input id="targetMin" type="number" min="5" step="5" value="60">
+          <select id="targetMin">
+            <option value="10">10</option>
+            <option value="20">20</option>
+            <option value="30" selected>30</option>
+            <option value="40">40</option>
+            <option value="50">50</option>
+            <option value="60">60</option>
+            <option value="90">90</option>
+            <option value="120">120</option>
+            <option value="180">180</option>
+            <option value="360">360</option>
+          </select>
         </div>
       </section>
 
       <section class="card col-12">
-        <h2>3. 現在ある材料</h2>
+        <h2>3. 🧅現在ある材料</h2>
         <textarea id="ingredients" placeholder="スペース・カンマ・読点「、」区切りで入力（例: 米、卵 玉ねぎ トマト 冷凍胸肉）"></textarea>
         <div class="chips" id="ingredientsChips"></div>
         <div class="row" style="margin-top:8px">
@@ -88,7 +102,7 @@
       </section>
 
       <section class="card col-12">
-        <h2>5. プロンプト生成</h2>
+        <h2>5. 💡プロンプト生成</h2>
         <div class="btnbar">
           <button class="primary" id="btnBuild">🧠プロンプト</button>
           <button id="btnCopy">📋コピー</button>
@@ -100,6 +114,6 @@
     </div>
   </div>
 
-<script src="main.js"></script>
+<script src="main.js?v=20260211.1"></script>
 </body>
 </html>
