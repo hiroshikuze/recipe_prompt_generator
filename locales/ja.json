@@ -1,0 +1,102 @@
+{
+  "meta": {
+    "title": "まかないジェネレーター",
+    "description": "料理のレシピを生成AIに依頼するためのプロンプトを提案するツールです。"
+  },
+  "ui": {
+    "title": "まかないジェネレーター",
+    "description": "料理のレシピを生成AIに依頼するためのプロンプトを提案するツールです。",
+    "storage_note": "前回内容は <span class=\"mono\">localStorage</span> に保存されます。",
+    "sections": {
+      "equip": {
+        "title": "1. 🍳機材",
+        "extra_label": "その他（スペース・カンマ・読点「、」区切り）",
+        "extra_placeholder": "例: 圧力鍋 ブレンダー"
+      },
+      "settings": {
+        "title": "2. 👥人数 / 回数 / 目標時間",
+        "adults": "大人",
+        "kids": "子ども",
+        "meal_count": "食事回数",
+        "target_min": "目標時間(分)"
+      },
+      "ingredients": {
+        "title": "3. 🧅現在ある材料",
+        "placeholder": "スペース・カンマ・読点「、」区切りで入力（例: 米、卵 玉ねぎ トマト 冷凍胸肉）",
+        "notes_label": "備考（任意）",
+        "notes_placeholder": "例: 下処理は最小限で。洗い物を少なく。辛味控えめ。アレルギー：ナッツ不可 など"
+      },
+      "format": {
+        "title": "4. 出力フォーマット指定（任意で調整可）",
+        "hint": "ここを書き換えると生成プロンプトの“お願いフォーマット”が変わります。"
+      },
+      "generate": {
+        "title": "5. 💡プロンプト生成",
+        "btn_build": "🧠プロンプト",
+        "btn_copy": "📋コピー",
+        "btn_perplexity": "🔗Perplexity",
+        "result_placeholder": "ここに生成結果が表示されます",
+        "footer": "生成したテキストを生成AIの質問欄に貼り付けてお使いください。"
+      }
+    }
+  },
+  "equipment": {
+    "hotcook": "ホットクック",
+    "healsio": "ヘルシオウォーターオーブン",
+    "gas_stove": "ガスコンロ",
+    "gas_oven": "ガスオーブン",
+    "rice_cooker": "炊飯器",
+    "microwave": "電子レンジ",
+    "frying_pan": "フライパン",
+    "pot": "鍋",
+    "toaster": "トースター",
+    "electric_pressure_cooker": "電気圧力鍋"
+  },
+  "prompt": {
+    "default_equip": "一般的な家庭用調理器具",
+    "default_ingredients": "特に指定なし（家にある一般的な調味料と食材）",
+    "delimiter": "、",
+    "intro": "以下の条件で、料理の計画とレシピを提案してください。",
+    "headers": {
+      "premise": "【前提】",
+      "requests": "【要望】",
+      "format": "【出力フォーマット】"
+    },
+    "premise": {
+      "equip": "・使用可能な機材：{{equip}}。",
+      "people": "・人数：大人{{adults}}人、子ども{{kids}}人。",
+      "time": "・目標調理時間：一連の作業を {{targetMin}} 分以内で完了。",
+      "meal_count": "・食事回数：{{mealCount}} 回分（作り置き/リメイク含む）。",
+      "ingredients": "・現在ある主な材料：{{ingredients}}。",
+      "notes": "・備考：{{notes}}"
+    },
+    "requests": {
+      "portions": "・最初に各レシピの分量（大人係数1.0、子ども0.6で計算）を明記してください。",
+      "efficiency": "・工程は同時並行で効率良く。洗い物が少なくなる順序で。",
+      "storage": "・保存方法（冷蔵/冷凍/日持ち目安）と再加熱手順を記載。",
+      "substitutes": "・不足食材があれば代替案を併記してください。"
+    }
+  },
+  "format_hint": {
+    "intro": "出力は次の順番・見出しで日本語でお願いします：",
+    "sections": [
+      "1) まとめ（全体像・所要時間・洗い物の目安）",
+      "2) 買い足すと良いもの（任意）",
+      "3) 一度に作る段取り（分刻みのタイムライン）",
+      "4) レシピ一覧（各レシピの材料・手順・保存方法）",
+      "5) 余った材料の活用案",
+      "6) 後片付けと保存のコツ"
+    ],
+    "notes": [
+      "※ 分量は大人=1.0, 子ども=0.6 係数で概算して明記してください。",
+      "※ 家に無い機材は使わないでください。代替案があれば併記。",
+      "※ 食事回数分の作りおき・リメイク前提で、再加熱手順も書いてください。"
+    ]
+  },
+  "toast": {
+    "copy_success": "コピーしました",
+    "copy_fail": "コピーに失敗しました…",
+    "prompt_empty": "プロンプトが空です",
+    "perplexity_fail": "Perplexityを開くことに失敗しました"
+  }
+}

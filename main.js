@@ -2,12 +2,111 @@
 
 (function(){
   /**
-   * デフォルトの調理機材リスト
+   * 多言語リソース
+   */
+  const I18N = {
+    ja: {
+      equipment: {
+        hotcook: "ホットクック",
+        healsio: "ヘルシオウォーターオーブン",
+        gas_stove: "ガスコンロ",
+        gas_oven: "ガスオーブン",
+        rice_cooker: "炊飯器",
+        microwave: "電子レンジ",
+        frying_pan: "フライパン",
+        pot: "鍋",
+        toaster: "トースター",
+        electric_pressure_cooker: "電気圧力鍋"
+      },
+      prompt: {
+        default_equip: "一般的な家庭用調理器具",
+        default_ingredients: "特に指定なし（家にある一般的な調味料と食材）",
+        delimiter: "、",
+        intro: "以下の条件で、料理の計画とレシピを提案してください。",
+        headers: { premise: "【前提】", requests: "【要望】", format: "【出力フォーマット】" },
+        premise: {
+          equip: "・使用可能な機材：{{equip}}。",
+          people: "・人数：大人{{adults}}人、子ども{{kids}}人。",
+          time: "・目標調理時間：一連の作業を {{targetMin}} 分以内で完了。",
+          meal_count: "・食事回数：{{mealCount}} 回分（作り置き/リメイク含む）。",
+          ingredients: "・現在ある主な材料：{{ingredients}}。",
+          notes: "・備考：{{notes}}"
+        },
+        requests: {
+          portions: "・最初に各レシピの分量（大人係数1.0、子ども0.6で計算）を明記してください。",
+          efficiency: "・工程は同時並行で効率良く。洗い物が少なくなる順序で。",
+          storage: "・保存方法（冷蔵/冷凍/日持ち目安）と再加熱手順を記載。",
+          substitutes: "・不足食材があれば代替案を併記してください。"
+        }
+      },
+      format_hint: {
+        intro: "出力は次の順番・見出しで日本語でお願いします：",
+        sections: [
+          "1) まとめ（全体像・所要時間・洗い物の目安）",
+          "2) 買い足すと良いもの（任意）",
+          "3) 一度に作る段取り（分刻みのタイムライン）",
+          "4) レシピ一覧（各レシピの材料・手順・保存方法）",
+          "5) 余った材料の活用案",
+          "6) 後片付けと保存のコツ"
+        ],
+        notes: [
+          "※ 分量は大人=1.0, 子ども=0.6 係数で概算して明記してください。",
+          "※ 家に無い機材は使わないでください。代替案があれば併記。",
+          "※ 食事回数分の作りおき・リメイク前提で、再加熱手順も書いてください。"
+        ]
+      },
+      toast: { copy_success: "コピーしました", copy_fail: "コピーに失敗しました…", prompt_empty: "プロンプトが空です", perplexity_fail: "Perplexityを開くことに失敗しました" }
+    },
+    en: {
+      equipment: {
+        hotcook: "Hot Cook",
+        healsio: "Healsio Water Oven",
+        gas_stove: "Gas Stove",
+        gas_oven: "Gas Oven",
+        rice_cooker: "Rice Cooker",
+        microwave: "Microwave",
+        frying_pan: "Frying Pan",
+        pot: "Pot",
+        toaster: "Toaster",
+        electric_pressure_cooker: "Electric Pressure Cooker"
+      },
+      prompt: {
+        default_equip: "Standard household cookware",
+        default_ingredients: "No specific preference (common household seasonings and ingredients)",
+        delimiter: ", ",
+        intro: "Please propose a meal plan and recipes based on the following conditions.",
+        headers: { premise: "[Premise]", requests: "[Requests]", format: "[Output Format]" },
+        premise: {
+          equip: "- Available Equipment: {{equip}}.",
+          people: "- People: {{adults}} adults, {{kids}} children.",
+          time: "- Target Cooking Time: Complete all tasks within {{targetMin}} minutes.",
+          meal_count: "- Number of Meals: {{mealCount}} meals (including meal prep/remakes).",
+          ingredients: "- Main Ingredients Available: {{ingredients}}.",
+          notes: "- Notes: {{notes}}"
+        },
+        requests: {
+          portions: "- First, specify the portion sizes for each recipe (calculate with Adult factor 1.0, Child 0.6).",
+          efficiency: "- Plan steps for parallel efficiency. Order tasks to minimize dishwashing.",
+          storage: "- Include storage methods (fridge/freezer/shelf life) and reheating instructions.",
+          substitutes: "- List alternatives if ingredients are missing."
+        }
+      },
+      format_hint: {
+        intro: "Please output in the following order and headings in English:",
+        sections: [ "1) Summary (Overview, Time required, Dishwashing estimate)", "2) Items to buy (Optional)", "3) Step-by-step Workflow (Minute-by-minute timeline)", "4) Recipe List (Ingredients, Steps, Storage for each)", "5) Ideas for leftover ingredients", "6) Cleanup and Storage Tips" ],
+        notes: [ "* Estimate portions with Adult=1.0, Child=0.6 coefficients.", "* Do not use equipment not listed. List alternatives if any.", "* Assume meal prep/remakes for the number of meals, and include reheating steps." ]
+      },
+      toast: { copy_success: "Copied!", copy_fail: "Failed to copy...", prompt_empty: "Prompt is empty", perplexity_fail: "Failed to open Perplexity" }
+    }
+  };
+
+  /**
+   * デフォルトの調理機材キーリスト
    * @type {string[]}
    */
-  const DEFAULT_EQUIP = [
-    "ホットクック","ヘルシオウォーターオーブン","ガスコンロ","ガスオーブン","炊飯器",
-    "電子レンジ","フライパン","鍋","トースター","電気圧力鍋"
+  const EQUIP_KEYS = [
+    "hotcook","healsio","gas_stove","gas_oven","rice_cooker",
+    "microwave","frying_pan","pot","toaster","electric_pressure_cooker"
   ];
 
   /**
@@ -32,6 +131,13 @@
   };
 
   /**
+   * 現在の言語設定を取得 (htmlタグのlang属性)
+   * @type {string}
+   */
+  const currentLang = document.documentElement.lang === 'en' ? 'en' : 'ja';
+  const t = I18N[currentLang];
+
+  /**
    * プロンプト出力後のアクションボタン（コピー、Perplexityで開く）の表示を切り替える
    */
   const updateActionButtonsVisibility = () => {
@@ -52,17 +158,17 @@
    */
   const renderEquipList = (saved) => {
     els.equipList.innerHTML = '';
-    DEFAULT_EQUIP.forEach(name => {
-      const id = 'eq_' + name;
+    EQUIP_KEYS.forEach(key => {
+      const id = 'eq_' + key;
       const wrap = document.createElement('label');
       wrap.className = 'equip-item';
       const cb = document.createElement('input');
       cb.type = 'checkbox';
-      cb.value = name;
+      cb.value = key;
       cb.id = id;
-      if(saved && saved.equip && saved.equip.includes(name)) cb.checked = true;
+      if(saved && saved.equip && saved.equip.includes(key)) cb.checked = true;
       const span = document.createElement('span');
-      span.textContent = name;
+      span.textContent = t.equipment[key] || key;
       wrap.appendChild(cb); wrap.appendChild(span);
       els.equipList.appendChild(wrap);
     });
@@ -107,7 +213,7 @@
    * @returns {Object}
    */
   const getState = () => {
-    const selectedEquip = [...els.equipList.querySelectorAll('input[type="checkbox"]:checked')].map(e=>e.value);
+    const selectedEquip = [...els.equipList.querySelectorAll('input[type="checkbox"]:checked')].map(e=>e.value); // keys
     const extra = parseList(els.equipExtra.value);
     const equip = uniq([...selectedEquip, ...extra]);
     return {
@@ -128,7 +234,7 @@
    * @param {Object} s
    */
   const setState = (s) => {
-    els.equipExtra.value = (s.equip||[]).filter(x=>!DEFAULT_EQUIP.includes(x)).join(', ');
+    els.equipExtra.value = (s.equip||[]).filter(x=>!EQUIP_KEYS.includes(x)).join(', ');
     els.adults.value = s.adults ?? 2;
     els.kids.value = s.kids ?? 0;
     els.mealCount.value = s.mealCount ?? 3;
@@ -157,7 +263,20 @@
     try{
       const raw = localStorage.getItem(STORAGE_KEY);
       if(!raw) return null;
-      return JSON.parse(raw);
+      const data = JSON.parse(raw);
+      
+      // 互換性対応: 古い日本語の機材名が保存されている場合、キーに変換する
+      if (data && data.equip && data.equip.length > 0) {
+        data.equip = data.equip.map(item => {
+          // 既にキーならそのまま
+          if (EQUIP_KEYS.includes(item)) return item;
+          // 日本語名からキーを探す (ja.jsonのvalueと一致するか)
+          const entry = Object.entries(I18N.ja.equipment).find(([k, v]) => v === item);
+          return entry ? entry[0] : item;
+        });
+      }
+      
+      return data;
     }catch(e){ return null }
   }
 
@@ -167,16 +286,9 @@
    */
   const defaultFormatHint = () => {
     return [
-      '出力は次の順番・見出しで日本語でお願いします：',
-      '1) まとめ（全体像・所要時間・洗い物の目安）',
-      '2) 買い足すと良いもの（任意）',
-      '3) 一度に作る段取り（分刻みのタイムライン）',
-      '4) レシピ一覧（各レシピの材料・手順・保存方法）',
-      '5) 余った材料の活用案',
-      '6) 後片付けと保存のコツ',
-      '※ 分量は大人=1.0, 子ども=0.6 係数で概算して明記してください。',
-      '※ 家に無い機材は使わないでください。代替案があれば併記。',
-      '※ 食事回数分の作りおき・リメイク前提で、再加熱手順も書いてください。'
+      t.format_hint.intro,
+      ...t.format_hint.sections,
+      ...t.format_hint.notes
     ].join('\n');
   }
 
@@ -184,25 +296,31 @@
    * プロンプトを生成し出力エリアに反映する
    */
   const buildPrompt = () => {
+    const p = t.prompt;
     const s = getState();
-    const equipText = s.equip.length ? s.equip.join('、') : '一般的な家庭用調理器具';
-    const ingText = s.ingredients.length ? s.ingredients.join('、') : '特に指定なし（家にある一般的な調味料と食材）';
+    
+    // 機材リストを名称に変換
+    const equipNames = s.equip.map(key => t.equipment[key] || key);
+    const equipText = equipNames.length ? equipNames.join(p.delimiter) : p.default_equip;
+    const ingText = s.ingredients.length ? s.ingredients.join(p.delimiter) : p.default_ingredients;
+
+    const replaceVars = (str, vars) => str.replace(/\{\{(\w+)\}\}/g, (_, k) => vars[k]);
 
     const base = [
-      `以下の条件で、料理の計画とレシピを提案してください。`,
-      `\n【前提】`,
-      `・使用可能な機材：${equipText}。`,
-      `・人数：大人${s.adults}人、子ども${s.kids}人。`,
-      `・目標調理時間：一連の作業を ${s.targetMin} 分以内で完了。`,
-      `・食事回数：${s.mealCount} 回分（作り置き/リメイク含む）。`,
-      `・現在ある主な材料：${ingText}。`,
-      s.notes ? `・備考：${s.notes}` : '',
-      `\n【要望】`,
-      `・最初に各レシピの分量（大人係数1.0、子ども0.6で計算）を明記してください。`,
-      `・工程は同時並行で効率良く。洗い物が少なくなる順序で。`,
-      `・保存方法（冷蔵/冷凍/日持ち目安）と再加熱手順を記載。`,
-      `・不足食材があれば代替案を併記してください。`,
-      `\n【出力フォーマット】\n${s.formatHint || defaultFormatHint()}`
+      p.intro,
+      `\n${p.headers.premise}`,
+      replaceVars(p.premise.equip, { equip: equipText }),
+      replaceVars(p.premise.people, { adults: s.adults, kids: s.kids }),
+      replaceVars(p.premise.time, { targetMin: s.targetMin }),
+      replaceVars(p.premise.meal_count, { mealCount: s.mealCount }),
+      replaceVars(p.premise.ingredients, { ingredients: ingText }),
+      s.notes ? replaceVars(p.premise.notes, { notes: s.notes }) : '',
+      `\n${p.headers.requests}`,
+      p.requests.portions,
+      p.requests.efficiency,
+      p.requests.storage,
+      p.requests.substitutes,
+      `\n${p.headers.format}\n${s.formatHint || defaultFormatHint()}`
     ].filter(Boolean).join('\n');
 
     els.out.value = base;
@@ -220,8 +338,8 @@
   els.btnCopy.addEventListener('click', async ()=>{
     try{
       await navigator.clipboard.writeText(els.out.value || '');
-      toast('コピーしました');
-    }catch(e){ toast('コピーに失敗しました…'); }
+      toast(t.toast.copy_success);
+    }catch(e){ toast(t.toast.copy_fail); }
   });
 
   /**
@@ -235,10 +353,10 @@
         const perplexityUrl = `https://www.perplexity.ai/search?q=${encodedPrompt}`;
         window.open(perplexityUrl, '_blank');
       } else {
-        toast('プロンプトが空です');
+        toast(t.toast.prompt_empty);
       }
     } catch (e) {
-      toast('Perplexityを開くことに失敗しました');
+      toast(t.toast.perplexity_fail);
       console.error('Perplexity open error:', e);
     }
   });

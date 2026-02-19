@@ -1,0 +1,102 @@
+{
+  "meta": {
+    "title": "Meal Prep Prompt Generator",
+    "description": "A tool to propose prompts for asking generative AI for cooking recipes."
+  },
+  "ui": {
+    "title": "Meal Prep Prompt Generator",
+    "description": "A tool to propose prompts for asking generative AI for cooking recipes.",
+    "storage_note": "Previous content is saved in <span class=\"mono\">localStorage</span>.",
+    "sections": {
+      "equip": {
+        "title": "1. 🍳Equipment",
+        "extra_label": "Other (separated by space or comma)",
+        "extra_placeholder": "e.g. Pressure Cooker, Blender"
+      },
+      "settings": {
+        "title": "2. 👥People / Meals / Time",
+        "adults": "Adults",
+        "kids": "Kids",
+        "meal_count": "Meals",
+        "target_min": "Target Time (min)"
+      },
+      "ingredients": {
+        "title": "3. 🧅Ingredients",
+        "placeholder": "Enter separated by space or comma (e.g. Rice, Eggs, Onion, Tomato, Frozen Chicken Breast)",
+        "notes_label": "Notes (Optional)",
+        "notes_placeholder": "e.g. Minimal prep. Less dishwashing. Mild spice. Allergy: No nuts, etc."
+      },
+      "format": {
+        "title": "4. Output Format (Optional)",
+        "hint": "Editing this changes the 'Request Format' in the generated prompt."
+      },
+      "generate": {
+        "title": "5. 💡Generate Prompt",
+        "btn_build": "🧠Generate",
+        "btn_copy": "📋Copy",
+        "btn_perplexity": "🔗Perplexity",
+        "result_placeholder": "Generated result will appear here",
+        "footer": "Paste the generated text into your AI chat to use."
+      }
+    }
+  },
+  "equipment": {
+    "hotcook": "Hot Cook",
+    "healsio": "Healsio Water Oven",
+    "gas_stove": "Gas Stove",
+    "gas_oven": "Gas Oven",
+    "rice_cooker": "Rice Cooker",
+    "microwave": "Microwave",
+    "frying_pan": "Frying Pan",
+    "pot": "Pot",
+    "toaster": "Toaster",
+    "electric_pressure_cooker": "Electric Pressure Cooker"
+  },
+  "prompt": {
+    "default_equip": "Standard household cookware",
+    "default_ingredients": "No specific preference (common household seasonings and ingredients)",
+    "delimiter": ", ",
+    "intro": "Please propose a meal plan and recipes based on the following conditions.",
+    "headers": {
+      "premise": "[Premise]",
+      "requests": "[Requests]",
+      "format": "[Output Format]"
+    },
+    "premise": {
+      "equip": "- Available Equipment: {{equip}}.",
+      "people": "- People: {{adults}} adults, {{kids}} children.",
+      "time": "- Target Cooking Time: Complete all tasks within {{targetMin}} minutes.",
+      "meal_count": "- Number of Meals: {{mealCount}} meals (including meal prep/remakes).",
+      "ingredients": "- Main Ingredients Available: {{ingredients}}.",
+      "notes": "- Notes: {{notes}}"
+    },
+    "requests": {
+      "portions": "- First, specify the portion sizes for each recipe (calculate with Adult factor 1.0, Child 0.6).",
+      "efficiency": "- Plan steps for parallel efficiency. Order tasks to minimize dishwashing.",
+      "storage": "- Include storage methods (fridge/freezer/shelf life) and reheating instructions.",
+      "substitutes": "- List alternatives if ingredients are missing."
+    }
+  },
+  "format_hint": {
+    "intro": "Please output in the following order and headings in English:",
+    "sections": [
+      "1) Summary (Overview, Time required, Dishwashing estimate)",
+      "2) Items to buy (Optional)",
+      "3) Step-by-step Workflow (Minute-by-minute timeline)",
+      "4) Recipe List (Ingredients, Steps, Storage for each)",
+      "5) Ideas for leftover ingredients",
+      "6) Cleanup and Storage Tips"
+    ],
+    "notes": [
+      "* Estimate portions with Adult=1.0, Child=0.6 coefficients.",
+      "* Do not use equipment not listed. List alternatives if any.",
+      "* Assume meal prep/remakes for the number of meals, and include reheating steps."
+    ]
+  },
+  "toast": {
+    "copy_success": "Copied!",
+    "copy_fail": "Failed to copy...",
+    "prompt_empty": "Prompt is empty",
+    "perplexity_fail": "Failed to open Perplexity"
+  }
+}

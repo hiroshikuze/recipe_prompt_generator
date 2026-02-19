@@ -1,42 +1,42 @@
 <!doctype html>
-<html lang="ja">
+<html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="料理のレシピを生成AIに依頼するためのプロンプトを提案するツールです。" />
-  <link rel="alternate" hreflang="ja" href="index.html" />
-  <link rel="alternate" hreflang="en" href="en/index.html" />
+  <meta name="description" content="A tool to propose prompts for asking generative AI for cooking recipes." />
+  <link rel="alternate" hreflang="ja" href="../index.html" />
+  <link rel="alternate" hreflang="en" href="index.html" />
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <title>まかないジェネレーター</title>
-  <link rel="stylesheet" href="style.css?v=20250817.1" />
-  <link rel="icon" href="favicon.ico?v=20260211.1" />
-  <link rel="apple-touch-icon" href="apple-touch-icon.png?v=20260211.1" />
+  <title>Meal Prep Prompt Generator</title>
+  <link rel="stylesheet" href="../style.css?v=20250817.1" />
+  <link rel="icon" href="../favicon.ico?v=20260211.1" />
+  <link rel="apple-touch-icon" href="../apple-touch-icon.png?v=20260211.1" />
 </head>
 <body>
   <div class="container">
     <div style="text-align: right; font-size: 0.9rem; margin-bottom: 4px;">
-      <span style="font-weight: bold; color: #374151; cursor: default;">JP</span>
+      <a href="../index.html" style="text-decoration: none; color: #2563eb;">JP</a>
       <span style="color: #9ca3af; margin: 0 4px;">|</span>
-      <a href="en/index.html" style="text-decoration: none; color: #2563eb;">EN</a>
+      <span style="font-weight: bold; color: #374151; cursor: default;">EN</span>
     </div>
-    <h1>まかないジェネレーター</h1>
-    <p class="lead">料理のレシピを生成AIに依頼するためのプロンプトを提案するツールです。<br>
-      前回内容は <span class="mono">localStorage</span> に保存されます。</p>
+    <h1>Meal Prep Prompt Generator</h1>
+    <p class="lead">A tool to propose prompts for asking generative AI for cooking recipes.<br>
+      Previous content is saved in <span class="mono">localStorage</span>.</p>
 
     <div class="grid">
       <section class="card col-6">
-        <h2>1. 🍳機材</h2>
+        <h2>1. 🍳Equipment</h2>
         <div class="equip-list" id="equipList"></div>
-        <label for="equipExtra" style="margin-top:8px">その他（スペース・カンマ・読点「、」区切り）</label>
-        <input id="equipExtra" type="text" placeholder="例: 圧力鍋 ブレンダー" />
+        <label for="equipExtra" style="margin-top:8px">Other (separated by space or comma)</label>
+        <input id="equipExtra" type="text" placeholder="e.g. Pressure Cooker, Blender" />
       </section>
 
       <section class="card col-6">
-        <h2>2. 👥人数 / 回数 / 目標時間</h2>
+        <h2>2. 👥People / Meals / Time</h2>
         <div class="row">
-          <label style="min-width:90px">大人</label>
+          <label style="min-width:90px">Adults</label>
           <select id="adults">
             <option value="0">0</option>
             <option value="1">1</option>
@@ -49,7 +49,7 @@
             <option value="8">8</option>
             <option value="9">9</option>
           </select>
-          <label style="min-width:90px">子ども</label>
+          <label style="min-width:90px">Kids</label>
           <select id="kids">
             <option value="0" selected>0</option>
             <option value="1">1</option>
@@ -64,7 +64,7 @@
           </select>
         </div>
         <div class="row" style="margin-top:8px">
-          <label style="min-width:90px">食事回数</label>
+          <label style="min-width:90px">Meals</label>
           <select id="mealCount">
             <option value="0">0</option>
             <option value="1">1</option>
@@ -77,7 +77,7 @@
             <option value="8">8</option>
             <option value="9">9</option>
           </select>
-          <label style="min-width:90px">目標時間(分)</label>
+          <label style="min-width:90px">Target Time (min)</label>
           <select id="targetMin">
             <option value="10">10</option>
             <option value="20">20</option>
@@ -94,34 +94,35 @@
       </section>
 
       <section class="card col-12">
-        <h2>3. 🧅現在ある材料</h2>
-        <textarea id="ingredients" placeholder="スペース・カンマ・読点「、」区切りで入力（例: 米、卵 玉ねぎ トマト 冷凍胸肉）"></textarea>
+        <h2>3. 🧅Ingredients</h2>
+        <textarea id="ingredients" placeholder="Enter separated by space or comma (e.g. Rice, Eggs, Onion, Tomato, Frozen Chicken Breast)"></textarea>
         <div class="chips" id="ingredientsChips"></div>
         <div class="row" style="margin-top:8px">
-          <label>備考（任意）</label>
+          <label>Notes (Optional)</label>
         </div>
-        <textarea id="notes" placeholder="例: 下処理は最小限で。洗い物を少なく。辛味控えめ。アレルギー：ナッツ不可 など"></textarea>
+        <textarea id="notes" placeholder="e.g. Minimal prep. Less dishwashing. Mild spice. Allergy: No nuts, etc."></textarea>
       </section>
 
       <section class="card col-12">
-        <h2>4. 出力フォーマット指定（任意で調整可）</h2>
+        <h2>4. Output Format (Optional)</h2>
         <textarea id="formatHint" class="mono" style="min-height:90px"></textarea>
-        <p class="muted small">ここを書き換えると生成プロンプトの“お願いフォーマット”が変わります。</p>
+        <p class="muted small">Editing this changes the 'Request Format' in the generated prompt.</p>
       </section>
 
       <section class="card col-12">
-        <h2>5. 💡プロンプト生成</h2>
+        <h2>5. 💡Generate Prompt</h2>
         <div class="btnbar">
-          <button class="primary" id="btnBuild">🧠プロンプト</button>
-          <button id="btnCopy">📋コピー</button>
+          <button class="primary" id="btnBuild">🧠Generate</button>
+          <button id="btnCopy">📋Copy</button>
           <button id="btnOpenPerplexity" class="right">🔗Perplexity</button>
         </div>
-        <textarea id="out" class="prompt mono" style="margin-top:10px;min-height:220px" placeholder="ここに生成結果が表示されます"></textarea>
-        <div class="footer">生成したテキストを生成AIの質問欄に貼り付けてお使いください。</div>
+        <textarea id="out" class="prompt mono" style="margin-top:10px;min-height:220px" placeholder="Generated result will appear here"></textarea>
+        <div class="footer">Paste the generated text into your AI chat to use.</div>
       </section>
     </div>
   </div>
 
 <script src="main.js?v=20260211.1"></script>
+<script src="../main.js?v=20260211.1"></script>
 </body>
 </html>
