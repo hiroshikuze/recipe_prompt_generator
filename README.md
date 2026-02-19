@@ -41,6 +41,10 @@ git clone <https://github.com/hiroshikuze/recipe_prompt_generator.git>
 # ブラウザから、index.htmlを開く
 ```
 
+## 使用技術
+
+HTML / JavaScript / CSS
+
 ## ライセンス
 
 このプロジェクトは[MITライセンス](https://github.com/hiroshikuze/recipe_prompt_generator/blob/main/LICENSE)の下で公開されています。
