@@ -14,7 +14,7 @@ This tool suggests prompts to ask AI to generate cooking recipes.
 
 ## デモ
 
-[index.html](https://hiroshikuze.github.io/recipe_prompt_generator/)をブラウザで開くと、デモが表示されます。
+[![Demo](https://img.shields.io/badge/Demo-Open%20App-22c55e?style=for-the-badge&logo=html5&logoColor=white)](https://hiroshikuze.github.io/recipe_prompt_generator/)
 
 ## 特徴
 
