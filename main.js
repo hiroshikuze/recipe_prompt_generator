@@ -271,13 +271,13 @@
           // 既にキーならそのまま
           if (EQUIP_KEYS.includes(item)) return item;
           // 日本語名からキーを探す (ja.jsonのvalueと一致するか)
-          const entry = Object.entries(I18N.ja.equipment).find(([k, v]) => v === item);
+          const entry = Object.entries(I18N.ja.equipment).find(([, v]) => v === item);
           return entry ? entry[0] : item;
         });
       }
       
       return data;
-    }catch(e){ return null }
+    }catch{ return null }
   }
 
   /**
@@ -339,7 +339,7 @@
     try{
       await navigator.clipboard.writeText(els.out.value || '');
       toast(t.toast.copy_success);
-    }catch(e){ toast(t.toast.copy_fail); }
+    }catch{ toast(t.toast.copy_fail); }
   });
 
   /**

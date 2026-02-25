@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://hiroshikuze.github.io/recipe_prompt_generator/sitemap.xml
