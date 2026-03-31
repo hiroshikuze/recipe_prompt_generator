@@ -61,5 +61,7 @@ HTML / JavaScript / CSS
 
 If you'd like to support my projects, please consider becoming a sponsor!
 
+<a href="https://github.com/hiroshikuze/recipe_prompt_generator/stargazers"><img src="https://img.shields.io/github/stars/hiroshikuze/recipe_prompt_generator?style=for-the-badge&logo=github&color=ffd700&logoColor=black" height="35" alt="GitHub Stars"></a>
+
 [![GitHub Sponsors](https://img.shields.io/badge/Sponsor-GitHub%20Sponsors-ea4aaa?style=for-the-badge&logo=github-sponsors)](https://github.com/sponsors/hiroshikuze)
 [![アマゾンの欲しいものリスト (Amazon.co.jp wish list)](https://img.shields.io/badge/Amazon-Wishlist-orange?style=for-the-badge&logo=amazon)](https://www.amazon.jp/hz/wishlist/ls/5BAWD0LZ89V9?ref_=wl_share)
