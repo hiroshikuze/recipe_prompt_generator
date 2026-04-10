@@ -20,6 +20,11 @@ This tool suggests prompts to ask AI to generate cooking recipes.
 
 - ユーザーが選択した調理機材に基づくレシピ提案
 - 材料のリストをカンマ区切りで入力可能
+- 材料入力時にチップ（タグ）形式でリアルタイムプレビュー表示
+- Perplexity へのワンクリック送信対応
+- 言語切り替え対応（日本語 / English）
+- 入力内容を localStorage に自動保存・復元
+- 初回訪問またはバージョン更新時に What's New モーダルを自動表示
 
 ## 使用方法
 

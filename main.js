@@ -55,7 +55,8 @@
           "※ 食事回数分の作りおき・リメイク前提で、再加熱手順も書いてください。"
         ]
       },
-      toast: { copy_success: "コピーしました", copy_fail: "コピーに失敗しました…", prompt_empty: "プロンプトが空です", perplexity_fail: "Perplexityを開くことに失敗しました" }
+      toast: { copy_success: "コピーしました", copy_fail: "コピーに失敗しました…", prompt_empty: "プロンプトが空です", perplexity_fail: "Perplexityを開くことに失敗しました" },
+      whats_new: { title: "✨ What's New", close: "閉じる", badge: "NEW" }
     },
     en: {
       equipment: {
@@ -96,7 +97,8 @@
         sections: [ "1) Summary (Overview, Time required, Dishwashing estimate)", "2) Items to buy (Optional)", "3) Step-by-step Workflow (Minute-by-minute timeline)", "4) Recipe List (Ingredients, Steps, Storage for each)", "5) Ideas for leftover ingredients", "6) Cleanup and Storage Tips" ],
         notes: [ "* Estimate portions with Adult=1.0, Child=0.6 coefficients.", "* Do not use equipment not listed. List alternatives if any.", "* Assume meal prep/remakes for the number of meals, and include reheating steps." ]
       },
-      toast: { copy_success: "Copied!", copy_fail: "Failed to copy...", prompt_empty: "Prompt is empty", perplexity_fail: "Failed to open Perplexity" }
+      toast: { copy_success: "Copied!", copy_fail: "Failed to copy...", prompt_empty: "Prompt is empty", perplexity_fail: "Failed to open Perplexity" },
+      whats_new: { title: "✨ What's New", close: "Close", badge: "NEW" }
     }
   };
 
@@ -108,6 +110,49 @@
     "hotcook","healsio","gas_stove","gas_oven","rice_cooker",
     "microwave","frying_pan","pot","toaster","electric_pressure_cooker"
   ];
+
+  /**
+   * アプリの更新履歴（ユーザー体験に関わる変更のみ記載・内部実装は除く）
+   * バージョン番号は静的リソースの ?v=YYYYMMDD.x に合わせる
+   * 新しいエントリは配列の先頭に追加する
+   * @type {Array<{version:string, date:string, items:{ja:string[],en:string[]}}>}
+   */
+  const CHANGELOG = [
+    {
+      version: '20260410.1',
+      date: '2026-04-10',
+      items: {
+        ja: [
+          'What\'s New モーダルを追加（初回訪問またはバージョン更新時に自動表示）'
+        ],
+        en: [
+          'Added What\'s New modal (auto-shown on first visit or after updates)'
+        ]
+      }
+    },
+    {
+      version: '20260222.2',
+      date: '2026-02-22',
+      items: {
+        ja: [
+          'Perplexity へのワンクリック送信ボタンを追加',
+          '材料入力時にチップ（タグ）形式でリアルタイムプレビュー表示',
+          '言語切り替え対応（日本語 / English）'
+        ],
+        en: [
+          'Added one-click Perplexity button to send prompts directly',
+          'Real-time chip tag preview for ingredient input',
+          'Language switch support (Japanese / English)'
+        ]
+      }
+    }
+  ];
+
+  /** 更新履歴の既読管理キー */
+  const CHANGELOG_SEEN_KEY = 'recipe_prompt_maker_changelog_seen';
+
+  /** 現在のアプリバージョン（最新CHANGELOGエントリのバージョン）*/
+  const CURRENT_VERSION = CHANGELOG[0].version;
 
   /**
    * 各種DOM要素への参照
@@ -376,6 +421,96 @@
     setTimeout(()=> t.remove(), 1700);
   }
 
+  /**
+   * What's New モーダルと再表示トリガーボタンをDOMに生成する
+   */
+  const createChangelogModal = () => {
+    const wn = t.whats_new;
+
+    // オーバーレイ
+    const overlay = document.createElement('div');
+    overlay.id = 'changelogModal';
+    overlay.className = 'changelog-overlay';
+    overlay.addEventListener('click', (e) => { if (e.target === overlay) hideChangelog(); });
+
+    // カード
+    const card = document.createElement('div');
+    card.className = 'changelog-card';
+
+    // ヘッダー（全エントリ分のセクションを生成）
+    const titleEl = document.createElement('p');
+    titleEl.className = 'changelog-title';
+    titleEl.textContent = wn.title;
+    card.appendChild(titleEl);
+
+    CHANGELOG.forEach(entry => {
+      const section = document.createElement('div');
+      section.className = 'changelog-section';
+
+      const dateEl = document.createElement('p');
+      dateEl.className = 'changelog-date';
+      dateEl.textContent = entry.date;
+      section.appendChild(dateEl);
+
+      const list = document.createElement('ul');
+      list.className = 'changelog-list';
+      const items = entry.items[currentLang] || entry.items.ja;
+      items.forEach(item => {
+        const li = document.createElement('li');
+        li.textContent = item;
+        list.appendChild(li);
+      });
+      section.appendChild(list);
+      card.appendChild(section);
+    });
+
+    // 閉じるボタン
+    const closeBtn = document.createElement('button');
+    closeBtn.textContent = wn.close;
+    closeBtn.className = 'changelog-close-btn';
+    closeBtn.addEventListener('click', hideChangelog);
+    card.appendChild(closeBtn);
+
+    overlay.appendChild(card);
+    document.body.appendChild(overlay);
+
+    // 固定NEWバッジ（右上）
+    const trigger = document.createElement('button');
+    trigger.id = 'btnShowChangelog';
+    trigger.className = 'changelog-trigger';
+    trigger.textContent = wn.badge;
+    trigger.addEventListener('click', showChangelog);
+    document.body.appendChild(trigger);
+  };
+
+  /**
+   * What's New モーダルを表示する
+   */
+  const showChangelog = () => {
+    const overlay = document.getElementById('changelogModal');
+    if (overlay) overlay.classList.add('is-open');
+  };
+
+  /**
+   * What's New モーダルを閉じ、現在バージョンを既読として記録する
+   */
+  const hideChangelog = () => {
+    const overlay = document.getElementById('changelogModal');
+    if (overlay) overlay.classList.remove('is-open');
+    localStorage.setItem(CHANGELOG_SEEN_KEY, CURRENT_VERSION);
+  };
+
+  /**
+   * What's New の初期化：初回訪問またはバージョン更新後の初回時に自動表示する
+   */
+  const initChangelog = () => {
+    createChangelogModal();
+    const seen = localStorage.getItem(CHANGELOG_SEEN_KEY);
+    if (seen !== CURRENT_VERSION) {
+      showChangelog();
+    }
+  };
+
   // Init
   (function init(){
     const saved = load();
@@ -384,5 +519,6 @@
     if(!saved){ els.formatHint.value = defaultFormatHint(); }
     ingredientsToChips();
     updateActionButtonsVisibility();
+    initChangelog();
   })();
 })();
