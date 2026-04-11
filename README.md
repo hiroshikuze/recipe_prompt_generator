@@ -2,7 +2,7 @@
 
 Recipe Prompt Generator.
 
-## 概要
+## Overview : 概要
 
 This tool suggests prompts to ask AI to generate cooking recipes.
 
@@ -12,11 +12,13 @@ This tool suggests prompts to ask AI to generate cooking recipes.
 
 ![faviicon](images/favicon_w256.png)
 
-## デモ
+## Demo : デモ
 
 [![Demo](https://img.shields.io/badge/Demo-Open%20App-22c55e?style=for-the-badge&logo=html5&logoColor=white)](https://hiroshikuze.github.io/recipe_prompt_generator/)
 
-## 特徴
+## Features : 特徴
+
+Suggest optimal AI prompts based on your selected equipment, ingredients, and preferences.
 
 - ユーザーが選択した調理機材に基づくレシピ提案
 - 材料のリストをカンマ区切りで入力可能
@@ -26,7 +28,9 @@ This tool suggests prompts to ask AI to generate cooking recipes.
 - 入力内容を localStorage に自動保存・復元
 - 初回訪問またはバージョン更新時に What's New モーダルを自動表示
 
-## 使用方法
+## Usage : 使用方法
+
+Select your equipment, enter ingredients, and click Generate to create an AI-ready cooking prompt.
 
 1. お手持ちの機材をチェックし、人数 / 回数 / 目標作業時間を指定します。
 2. 材料をカンマ区切りなどで入力します。
@@ -35,7 +39,9 @@ This tool suggests prompts to ask AI to generate cooking recipes.
 5. 「🧠プロンプト」ボタンをクリックしてレシピ生成プロンプトを作成させます。
 6. 「📋コピー」を押してクリップボードにコピーし、お好みの生成AIに問い合わせしていただくか、「🔗Perplexity」を押して[Perplexity](https://www.perplexity.ai/)から料理レシピを相談してください。
 
-## インストール
+## Installation : インストール
+
+To run locally, clone the repository and open `index.html` in your browser.
 
 このプロジェクトをローカル環境で実行するには、次の手順を実行してください：
 
@@ -46,25 +52,27 @@ git clone <https://github.com/hiroshikuze/recipe_prompt_generator.git>
 # ブラウザから、index.htmlを開く
 ```
 
-## 使用技術
+## Tech Stack : 使用技術
 
 HTML / JavaScript / CSS
 
-## ライセンス
+## License : ライセンス
+
+This project is released under the [MIT License](https://github.com/hiroshikuze/recipe_prompt_generator/blob/main/LICENSE).
 
 このプロジェクトは[MITライセンス](https://github.com/hiroshikuze/recipe_prompt_generator/blob/main/LICENSE)の下で公開されています。
 
-## 作者
+## Author : 作者
 
 [hiroshikuze](https://github.com/hiroshikuze/)
 
 ---
 
-## 💖 応援募集 (Support my work)
-
-このプロジェクトを応援していただける方は、ぜひスポンサーおよび寄付をお願いします！
+## 💖 Support my work : 応援募集
 
 If you'd like to support my projects, please consider becoming a sponsor!
+
+このプロジェクトを応援していただける方は、ぜひスポンサーおよび寄付をお願いします！
 
 <a href="https://github.com/hiroshikuze/recipe_prompt_generator/stargazers"><img src="https://img.shields.io/github/stars/hiroshikuze/recipe_prompt_generator?style=for-the-badge&logo=github&color=ffd700&logoColor=black" height="35" alt="GitHub Stars"></a>
 
