@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>OCRテスト（あすけん画像用）</title>
+    <style>
+        body { font-family: sans-serif; max-width: 900px; margin: 20px auto; padding: 0 16px; }
+        h1 { font-size: 1.2rem; }
+        .section { margin: 16px 0; padding: 12px; border: 1px solid #ccc; border-radius: 6px; }
+        .section h2 { font-size: 1rem; margin: 0 0 8px; }
+        canvas { max-width: 100%; border: 1px solid #aaa; display: block; margin: 4px 0; }
+        textarea { width: 100%; height: 180px; font-size: 0.85rem; font-family: monospace; }
+        label { font-weight: bold; }
+        select, input[type=range] { margin: 4px; }
+        .status { color: #555; font-size: 0.85rem; }
+        .result-box { background: #f5f5f5; padding: 8px; border-radius: 4px; white-space: pre-wrap; font-size: 0.85rem; font-family: monospace; min-height: 60px; }
+        .tag { display: inline-block; padding: 2px 8px; border-radius: 3px; font-size: 0.8rem; font-weight: bold; margin: 2px; }
+        .fusoku { background: #5b9bd5; color: white; }
+        .kajou  { background: #e07b4f; color: white; }
+        .tekisei{ background: #5aaa5a; color: white; }
+        button { padding: 6px 14px; cursor: pointer; }
+    </style>
+</head>
+<body>
+<h1>Tesseract.js OCRテスト（あすけん栄養グラフ画像用）</h1>
+
+<div class="section">
+    <h2>1. 画像を選択</h2>
+    <input type="file" id="fileInput" accept="image/*">
+    <p class="status">あすけんのスクリーンショットをアップロードしてください</p>
+</div>
+
+<div class="section">
+    <h2>2. 前処理プレビュー</h2>
+    <label>前処理モード:
+        <select id="mode">
+            <option value="none">なし（オリジナル）</option>
+            <option value="gray">グレースケールのみ</option>
+            <option value="saturation" selected>彩度マスク＋二値化（推奨）</option>
+            <option value="invert_sat">彩度マスク＋反転＋二値化</option>
+        </select>
+    </label>
+    <br>
+    <label>二値化しきい値: <span id="threshLabel">128</span>
+        <input type="range" id="thresh" min="50" max="220" value="128">
+    </label>
+    <br>
+    <label>彩度しきい値（色判定の感度）: <span id="satLabel">40</span>
+        <input type="range" id="satThresh" min="10" max="120" value="40">
+    </label>
+    <br>
+    <button id="previewBtn" disabled>プレビュー更新</button>
+    <br>
+    <canvas id="preview"></canvas>
+</div>
+
+<div class="section">
+    <h2>3. OCR実行</h2>
+    <button id="ocrBtn" disabled>OCR実行（前処理あり）</button>
+    <button id="ocrRawBtn" disabled>OCR実行（前処理なし・比較用）</button>
+    <p class="status" id="ocrStatus">画像を選択してください</p>
+</div>
+
+<div class="section">
+    <h2>4. OCR生テキスト</h2>
+    <div style="display:flex; gap:16px; flex-wrap:wrap;">
+        <div style="flex:1; min-width:200px;">
+            <label>前処理あり</label>
+            <textarea id="resultProcessed" readonly placeholder="OCR結果がここに表示されます"></textarea>
+        </div>
+        <div style="flex:1; min-width:200px;">
+            <label>前処理なし（比較）</label>
+            <textarea id="resultRaw" readonly placeholder="OCR結果がここに表示されます"></textarea>
+        </div>
+    </div>
+</div>
+
+<div class="section">
+    <h2>5. 抽出結果（不足・過剰の自動検出）</h2>
+    <div id="parsedResult" class="result-box">OCR実行後に表示されます</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+<script>
+"use strict";
+
+const fileInput   = document.getElementById("fileInput");
+const previewBtn  = document.getElementById("previewBtn");
+const ocrBtn      = document.getElementById("ocrBtn");
+const ocrRawBtn   = document.getElementById("ocrRawBtn");
+const preview     = document.getElementById("preview");
+const ocrStatus   = document.getElementById("ocrStatus");
+const modeSelect  = document.getElementById("mode");
+const threshSlider= document.getElementById("thresh");
+const satSlider   = document.getElementById("satThresh");
+const threshLabel = document.getElementById("threshLabel");
+const satLabel    = document.getElementById("satLabel");
+
+let originalImage = null;
+
+threshSlider.addEventListener("input", () => { threshLabel.textContent = threshSlider.value; });
+satSlider.addEventListener("input",   () => { satLabel.textContent = satSlider.value; });
+
+fileInput.addEventListener("change", (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+        const img = new Image();
+        img.onload = () => {
+            originalImage = img;
+            drawProcessed(img);
+            previewBtn.disabled = false;
+            ocrBtn.disabled = false;
+            ocrRawBtn.disabled = false;
+            ocrStatus.textContent = "OCRボタンを押して実行してください";
+        };
+        img.src = ev.target.result;
+    };
+    reader.readAsDataURL(file);
+});
+
+previewBtn.addEventListener("click", () => {
+    if (originalImage) drawProcessed(originalImage);
+});
+
+/**
+ * 選択されたモードで画像を前処理してcanvasに描画する
+ * @param {HTMLImageElement} img
+ */
+const drawProcessed = (img) => {
+    const ctx = preview.getContext("2d");
+    preview.width  = img.width;
+    preview.height = img.height;
+    ctx.drawImage(img, 0, 0);
+
+    const mode = modeSelect.value;
+    if (mode === "none") return;
+
+    const imageData = ctx.getImageData(0, 0, preview.width, preview.height);
+    const d = imageData.data;
+    const thresh    = parseInt(threshSlider.value);
+    const satThresh = parseInt(satSlider.value);
+
+    for (let i = 0; i < d.length; i += 4) {
+        const r = d[i], g = d[i+1], b = d[i+2];
+
+        if (mode === "gray") {
+            const gray = Math.round(r * 0.299 + g * 0.587 + b * 0.114);
+            d[i] = d[i+1] = d[i+2] = gray;
+            continue;
+        }
+
+        // HSL変換（彩度を求めるため）
+        const rn = r/255, gn = g/255, bn = b/255;
+        const max = Math.max(rn, gn, bn);
+        const min = Math.min(rn, gn, bn);
+        const saturation = (max - min) / (max + min + 0.0001) * 255;
+
+        const gray = Math.round(r * 0.299 + g * 0.587 + b * 0.114);
+
+        if (mode === "saturation") {
+            // 色付きピクセル（バッジ背景）を黒にして白文字を浮き立たせる
+            let val;
+            if (saturation > satThresh) {
+                val = 0; // 色付き → 黒（背景扱い）
+            } else {
+                val = gray > thresh ? 255 : 0;
+            }
+            d[i] = d[i+1] = d[i+2] = val;
+        } else if (mode === "invert_sat") {
+            // 色付きピクセルを白→文字を黒（逆パターン）
+            let val;
+            if (saturation > satThresh) {
+                val = 255;
+            } else {
+                val = gray > thresh ? 255 : 0;
+            }
+            d[i] = d[i+1] = d[i+2] = val;
+        }
+    }
+    ctx.putImageData(imageData, 0, 0);
+};
+
+/**
+ * Canvasの現在の状態でOCRを実行する
+ * @param {boolean} useProcessed - trueなら前処理済みcanvas、falseならオリジナル画像
+ * @return {Promise<string>}
+ */
+const runOcr = async (useProcessed) => {
+    const source = useProcessed ? preview.toDataURL() : originalImage.src;
+    ocrStatus.textContent = "OCR処理中... しばらくお待ちください";
+    try {
+        const result = await Tesseract.recognize(source, "jpn", {
+            logger: (m) => {
+                if (m.status === "recognizing text") {
+                    ocrStatus.textContent = `認識中: ${Math.round(m.progress * 100)}%`;
+                }
+            }
+        });
+        ocrStatus.textContent = "完了";
+        return result.data.text;
+    } catch (err) {
+        console.error("OCRエラー:", err);
+        ocrStatus.textContent = "エラーが発生しました";
+        return "";
+    }
+};
+
+ocrBtn.addEventListener("click", async () => {
+    if (!originalImage) return;
+    drawProcessed(originalImage);
+    const text = await runOcr(true);
+    document.getElementById("resultProcessed").value = text;
+    showParsed(text);
+});
+
+ocrRawBtn.addEventListener("click", async () => {
+    if (!originalImage) return;
+    const text = await runOcr(false);
+    document.getElementById("resultRaw").value = text;
+});
+
+/**
+ * OCRテキストから不足・過剰・適正の栄養素を抽出して表示する
+ * @param {string} text
+ */
+const showParsed = (text) => {
+    const nutrients = [
+        "エネルギー","たんぱく質","脂質","炭水化物",
+        "カルシウム","鉄","ビタミンA","ビタミンE",
+        "ビタミンB1","ビタミンB2","ビタミンC","食物繊維",
+        "飽和脂肪酸","塩分"
+    ];
+
+    const fusoku  = [];
+    const kajou   = [];
+    const tekisei = [];
+
+    const lines = text.split("\n").map(l => l.trim());
+
+    for (const nutrient of nutrients) {
+        // 栄養素名を含む行を探す
+        const line = lines.find(l => l.includes(nutrient));
+        if (!line) continue;
+        if (line.includes("不足")) fusoku.push(nutrient);
+        else if (line.includes("過剰")) kajou.push(nutrient);
+        else if (line.includes("適正")) tekisei.push(nutrient);
+    }
+
+    const el = document.getElementById("parsedResult");
+    if (fusoku.length === 0 && kajou.length === 0) {
+        el.textContent = "不足・過剰の栄養素が検出できませんでした。\nOCR生テキストを確認して精度を評価してください。";
+        return;
+    }
+
+    el.innerHTML = "";
+    if (fusoku.length) {
+        el.innerHTML += "<strong>不足:</strong> " + fusoku.map(n => `<span class="tag fusoku">${n}</span>`).join("") + "<br>";
+    }
+    if (kajou.length) {
+        el.innerHTML += "<strong>過剰:</strong> " + kajou.map(n => `<span class="tag kajou">${n}</span>`).join("") + "<br>";
+    }
+    if (tekisei.length) {
+        el.innerHTML += "<strong>適正:</strong> " + tekisei.map(n => `<span class="tag tekisei">${n}</span>`).join("") + "<br>";
+    }
+};
+</script>
+</body>
+</html>
