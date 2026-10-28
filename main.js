@@ -119,6 +119,18 @@
    */
   const CHANGELOG = [
     {
+      version: '20261028.2',
+      date: '2026-10-28',
+      items: {
+        ja: [
+          '共有ボタンを追加（対応ブラウザでOSのシェアシートから生成AIアプリへ直接送信可能）'
+        ],
+        en: [
+          'Added Share button (send prompt directly to AI apps via OS share sheet on supported browsers)'
+        ]
+      }
+    },
+    {
       version: '20260410.1',
       date: '2026-04-10',
       items: {
