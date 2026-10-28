@@ -55,7 +55,7 @@
           "※ 食事回数分の作りおき・リメイク前提で、再加熱手順も書いてください。"
         ]
       },
-      toast: { copy_success: "コピーしました", copy_fail: "コピーに失敗しました…", prompt_empty: "プロンプトが空です", perplexity_fail: "Perplexityを開くことに失敗しました" },
+      toast: { copy_success: "コピーしました", copy_fail: "コピーに失敗しました…", share_fail: "共有に失敗しました…", prompt_empty: "プロンプトが空です", perplexity_fail: "Perplexityを開くことに失敗しました" },
       whats_new: { title: "✨ What's New", close: "閉じる", badge: "NEW" }
     },
     en: {
@@ -97,7 +97,7 @@
         sections: [ "1) Summary (Overview, Time required, Dishwashing estimate)", "2) Items to buy (Optional)", "3) Step-by-step Workflow (Minute-by-minute timeline)", "4) Recipe List (Ingredients, Steps, Storage for each)", "5) Ideas for leftover ingredients", "6) Cleanup and Storage Tips" ],
         notes: [ "* Estimate portions with Adult=1.0, Child=0.6 coefficients.", "* Do not use equipment not listed. List alternatives if any.", "* Assume meal prep/remakes for the number of meals, and include reheating steps." ]
       },
-      toast: { copy_success: "Copied!", copy_fail: "Failed to copy...", prompt_empty: "Prompt is empty", perplexity_fail: "Failed to open Perplexity" },
+      toast: { copy_success: "Copied!", copy_fail: "Failed to copy...", share_fail: "Failed to share...", prompt_empty: "Prompt is empty", perplexity_fail: "Failed to open Perplexity" },
       whats_new: { title: "✨ What's New", close: "Close", badge: "NEW" }
     }
   };
