@@ -33,6 +33,7 @@
       "generate": {
         "title": "5. 💡Generate Prompt",
         "btn_build": "🧠Generate",
+        "btn_share": "📤Share",
         "btn_copy": "📋Copy",
         "btn_perplexity": "🔗Perplexity",
         "result_placeholder": "Generated result will appear here",
@@ -96,6 +97,7 @@
   "toast": {
     "copy_success": "Copied!",
     "copy_fail": "Failed to copy...",
+    "share_fail": "Failed to share...",
     "prompt_empty": "Prompt is empty",
     "perplexity_fail": "Failed to open Perplexity"
   }
