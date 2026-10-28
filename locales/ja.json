@@ -33,6 +33,7 @@
       "generate": {
         "title": "5. 💡プロンプト生成",
         "btn_build": "🧠プロンプト",
+        "btn_share": "📤共有",
         "btn_copy": "📋コピー",
         "btn_perplexity": "🔗Perplexity",
         "result_placeholder": "ここに生成結果が表示されます",
@@ -96,6 +97,7 @@
   "toast": {
     "copy_success": "コピーしました",
     "copy_fail": "コピーに失敗しました…",
+    "share_fail": "共有に失敗しました…",
     "prompt_empty": "プロンプトが空です",
     "perplexity_fail": "Perplexityを開くことに失敗しました"
   }

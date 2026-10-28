@@ -169,6 +169,7 @@
     notes: document.getElementById('notes'),
     formatHint: document.getElementById('formatHint'),
     btnBuild: document.getElementById('btnBuild'),
+    btnShare: document.getElementById('btnShare'),
     btnCopy: document.getElementById('btnCopy'),
     btnOpenPerplexity: document.getElementById('btnOpenPerplexity'),
     out: document.getElementById('out'),
@@ -183,10 +184,18 @@
   const t = I18N[currentLang];
 
   /**
-   * プロンプト出力後のアクションボタン（コピー、Perplexityで開く）の表示を切り替える
+   * Web Share APIに対応しているかチェック
+   * @type {boolean}
+   */
+  const canShare = typeof navigator.share === 'function';
+
+  /**
+   * プロンプト出力後のアクションボタン（共有、コピー、Perplexityで開く）の表示を切り替える
    */
   const updateActionButtonsVisibility = () => {
     const hasPrompt = els.out.value && els.out.value.trim() !== '';
+    // 共有ボタンはshare API対応環境かつプロンプトあり時のみ表示
+    els.btnShare.style.display = hasPrompt && canShare ? '' : 'none';
     els.btnCopy.style.display = hasPrompt ? '' : 'none';
     els.btnOpenPerplexity.style.display = hasPrompt ? '' : 'none';
   };
@@ -379,6 +388,23 @@
       .forEach(id=> els[id].addEventListener(ev, ()=>{ ingredientsToChips(); save(); }));
   });
   els.btnBuild.addEventListener('click', buildPrompt);
+
+  /**
+   * Web Share APIでプロンプトをOSのシェアシートに渡す
+   */
+  els.btnShare.addEventListener('click', async () => {
+    const text = els.out.value || '';
+    if (!text.trim()) { toast(t.toast.prompt_empty); return; }
+    try {
+      await navigator.share({ text });
+    } catch (e) {
+      // AbortErrorはユーザーがキャンセルした場合のため無視
+      if (e.name !== 'AbortError') {
+        toast(t.toast.share_fail);
+        console.error('Share error:', e);
+      }
+    }
+  });
 
   els.btnCopy.addEventListener('click', async ()=>{
     try{
